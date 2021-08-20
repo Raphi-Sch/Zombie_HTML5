@@ -8,8 +8,8 @@ class Zombie {
     positionY(){ return this.y };
 
     closestPlayer(player1X, player1Y, player2X, player2Y){
-        dPlayer1 = Math.sqrt(Math.pow(player1X - this.x, 2) + Math.pow(player1Y - this.y, 2));
-        dPlayer2 = Math.sqrt(Math.pow(player2X - this.x, 2) + Math.pow(player2Y - this.y, 2));
+        var dPlayer1 = Math.sqrt(Math.pow(player1X - this.x, 2) + Math.pow(player1Y - this.y, 2));
+        var dPlayer2 = Math.sqrt(Math.pow(player2X - this.x, 2) + Math.pow(player2Y - this.y, 2));
 
         if(dPlayer1 < dPlayer2)
             return [player1X - this.x, player1Y - this.y];
@@ -18,59 +18,138 @@ class Zombie {
     }
 
     followPlayer(dx, dy){
-        if(Math.abs(dx) < Math.abs(dy)){
-            if(dx > 0)
+        if(Math.abs(dx) > Math.abs(dy)){
+            if(dx < 0)
                 return "L";
             else
                 return "R";
         }
         else{
-            if(dy > 0)
+            if(dy < 0)
                 return "U";
             else
                 return "D";
         }
     }
 
-    possiblePath(game){
+    firstPossiblePath(game, dx, dy){
         // All Path blocked (in order : UP, DOWN, LEFT, RIGHT)
         if(game.isCollinding(this.x, this.y - 1) && game.isCollinding(this.x, this.y + 1) &&  game.isCollinding(this.x - 1, this.y && game.isCollinding(this.x + 1, this.y)))
             return "";
 
-        // 3 Path blocked
+        // 3 Path blocked ---------------------
         // UP, DOWN, RIGHT
         if(game.isCollinding(this.x, this.y - 1) && game.isCollinding(this.x, this.y + 1) && game.isCollinding(this.x + 1, this.y))
             return "L";
 
+        // UP, DOWN, LEFT
+        if(game.isCollinding(this.x, this.y - 1) && game.isCollinding(this.x, this.y + 1) && game.isCollinding(this.x - 1, this.y))
+            return "R";
+
         // UP, LEFT, RIGHT
         if(game.isCollinding(this.x, this.y - 1) && game.isCollinding(this.x - 1, this.y) && game.isCollinding(this.x + 1, this.y))
             return "D";
+
+        // DOWN, LEFT, RIGHT
+        if(game.isCollinding(this.x, this.y + 1) && game.isCollinding(this.x - 1, this.y) && game.isCollinding(this.x + 1, this.y))
+            return "U";
+
+        // 2 Path blocked --------------------
+        // UP, LEFT
+        if(game.isCollinding(this.x, this.y - 1) && game.isCollinding(this.x - 1, this.y))
+            return "R";
+        
+        // UP, RIGHT
+        if(game.isCollinding(this.x, this.y - 1) && game.isCollinding(this.x + 1, this.y))
+            return "L";
+        
+        // DOWN, LEFT
+        if(game.isCollinding(this.x, this.y + 1) && game.isCollinding(this.x - 1, this.y))
+            return "R";
+
+        // UP, RIGHT
+        if(game.isCollinding(this.x, this.y + 1) && game.isCollinding(this.x + 1, this.y))
+            return "R";
+
+        // 1 Path blocked --------------------
+        if(game.isCollinding(this.x, this.y + 1) || game.isCollinding(this.x, this.y - 1)){
+            if(dx < 0)
+                return "L";
+            else
+                return "R";
+        }
+
+        if(game.isCollinding(this.x + 1, this.y) || game.isCollinding(this.x - 1, this.y)){
+            if(dy < 0)
+                return "U";
+            else
+                return "D";
+        }
     }
 
     move(game, player1X, player1Y, player2X, player2Y){
+        var moved = false;
         var previousX = this.x;
         var previousY = this.y;
 
-        /*
-        if(Math.random() > 0.5)
-            this.x++;
-        else
-            this.x--;
+        // Distance
+        var res = this.closestPlayer(player1X, player1Y, player2X, player2Y);
+        var dx = res[0];
+        var dy = res[1];
 
-        if(Math.random() > 0.5)
-            this.y++;
-        else
+        var direction = this.followPlayer(dx, dy);
+
+        // Primary movement
+        if(direction == "U" && !game.isCollinding(this.x, this.y - 1)){
             this.y--;
+            moved = true;
+        }
 
-        if(this.x <= 0) this.x = 0;
-        if(this.x >= 20) this.x = 20;
+        if(direction == "D" && !game.isCollinding(this.x, this.y + 1)){
+            this.y++;
+            moved = true;
+        }
 
-        if(this.y <= 0) this.y = 0;
-        if(this.y >= 20) this.y = 20;
-        */
+        if(direction == "L" && !game.isCollinding(this.x - 1, this.y)){
+            this.x--;
+            moved = true;
+        }
 
-        
+        if(direction == "R" && !game.isCollinding(this.x + 1, this.y)){
+            this.x++;
+            moved = true;
+        }
 
-        game.moveTile(2, previousX, previousY, this.x, this.y)
+        // Secondary movement (didn't moved before)
+        if(!moved){
+            direction = this.firstPossiblePath(game, dx, dy);
+            switch(direction){
+                case "U":
+                    this.y--;
+                    moved = true;
+                    break;
+                
+                case "D":
+                    this.y++;
+                    moved = true;
+                    break;
+                
+                case "L":
+                    this.x--;
+                    moved = true;
+                    break;
+            
+                case "R":
+                    this.x++;
+                    moved = true;
+                    break;
+
+                default: break;
+            }
+        }
+
+        // Updating tile if it moved
+        if(moved)
+            game.moveTile(2, previousX, previousY, this.x, this.y);
     }
 }
