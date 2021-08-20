@@ -7,6 +7,8 @@ class Player {
 
     move(game, x, y){
         var moved = false;
+        var previousX = this.x;
+        var previousY = this.y;
 
         if(x == 1 && !game.isCollinding(this.x + 1, this.y)){
             this.x++;
@@ -28,8 +30,13 @@ class Player {
             moved = true;
         }
 
-        if(moved)
-            game.showPlayerMovement(this.id, x, y);
+        if(moved){
+            if(this.id == 1)
+                moveTile(6, previousX, previousY, this.x, this.y);
+            
+            if(this.id == 2)
+                moveTile(7, previousX, previousY, this.x, this.y); 
+        }
     }
 
     positionX(){ return this.x };
