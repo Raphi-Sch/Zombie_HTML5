@@ -8,6 +8,7 @@
 		<style>
 			body {
 				background-color: #2B2A33;
+                color: white;
 			}
             
             canvas { 
@@ -17,15 +18,51 @@
 		</style>
 	</head>
 	<body onkeypress="keyPressed(event)">
+        <script>
+            function getParameter(param) {
+                var vars = {};
+                window.location.href.replace( location.hash, '' ).replace( 
+                    /[?&]+([^=&]+)=?([^&]*)?/gi, // regexp
+                    function( m, key, value ) { // callback
+                        vars[key] = value !== undefined ? value : '';
+                    }
+                );
+
+                if ( param ) {
+                    return vars[param] ? vars[param] : null;	
+                }
+                return vars;
+            }
+
+            var level = getParameter('level');
+
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('level').value = level;
+                loadAssets(level);
+            }, false);
+        </script>
+
+        <center>
+            <canvas id="game-canvas" width="672" height="672">
+                Oh no! Your browser doesn't support canvas!
+            </canvas>
+            <br/>
+            
+            <form id='form-level'>
+                Level selector
+                <select name='level' id='level' onChange="document.getElementById('form-level').submit()">
+                    <option value=1>Level 1</option>
+                    <option value=2>Level 2</option>
+                    <option value=3>Level 3</option>
+                    <option value=4>Level 4</option>
+                    <option value=5>Level 5</option>
+                </select>
+            </form>
+        </center>
+
         <script src="src/js/levels.js"></script>
         <script src="src/js/player.js"></script>
         <script src="src/js/zombie.js"></script>
         <script src="src/js/game.js"></script>
-        
-        <center>
-            <canvas id="game-canvas" width="672" height="672">
-                Oh no! Your browser doesn't support canvas!
-            </canvas>	
-        </center>
 	</body>
 </html>

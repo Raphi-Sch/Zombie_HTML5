@@ -23,7 +23,7 @@ var player1 = null;
 var player2 = null;
 var playerMovement = 0;
 
-function loadAssets(){
+function loadAssets(level){
   // Canvas context
   ctx = document.getElementById('game-canvas').getContext('2d');
 
@@ -40,17 +40,35 @@ function loadAssets(){
 
   // Waiting for assets
   tmpInterval = setInterval(() => {
-    if(loaded == i) main();
+    if(loaded == i){
+      clearInterval(tmpInterval);
+
+      switch(parseInt(level)){
+        default:
+        case 1:
+          currentLevel = level1;
+          break;
+
+        case 2:
+          currentLevel = level2;
+          break;
+
+        case 3:
+          currentLevel = level3;
+          break;
+
+        case 4:
+          currentLevel = level4;
+          break;
+
+        case 5:
+          currentLevel = level5;
+          break;
+      }
+
+      setupLevel(currentLevel);
+    }
   }, 100);
-}
-
-function main(){
-  clearInterval(tmpInterval);
-
-  currentLevel = level1;
-
-  setupLevel(currentLevel);
-  
 }
 
 function setupLevel(level){
@@ -201,5 +219,3 @@ function keyPressed(event){
     }
 
 }
-
-window.onload = loadAssets;
