@@ -27,6 +27,15 @@ function loadAssets(level){
   // Canvas context
   ctx = document.getElementById('game-canvas').getContext('2d');
 
+  // Loading bar
+  ctx.beginPath();
+  ctx.lineWidth = "2";
+  ctx.strokeStyle = "black";
+  ctx.rect(35, 326, 602, 20);
+  ctx.stroke();
+  ctx.font = "30px Arial";
+  ctx.fillText("Loading ...", 280, 300); 
+
   // Loading textures
   var i = 0;
   var loaded = 0;
@@ -35,11 +44,18 @@ function loadAssets(level){
     tmp.src = src;
     tileArray[i] = tmp;
     tmp.onload = function() {loaded++;}
+
     i++;
   });
 
   // Waiting for assets
   tmpInterval = setInterval(() => {
+    // Progress bar
+    ctx.beginPath();
+    ctx.fillStyle = "#95a5a6";
+    ctx.fillRect(36, 327, 600 * (loaded / tileSrc.length), 18);
+    ctx.stroke();
+
     if(loaded == i){
       clearInterval(tmpInterval);
 
