@@ -96,6 +96,7 @@ function setupLevel(levelNumber){
         case 2: // Zombie
           ctx.drawImage(tileArray[0], x * 32, y * 32);
           zombies.push(new Zombie(x, y, zombies.length));
+          currentLevel[y][x] = 0;
           break;
 
         case 3: // Button
@@ -149,31 +150,35 @@ function isCollinding(x, y){
 }
 
 function buttonPressed(){
-  var active = false;
+  return new Promise((resolve, reject) => {
+    var active = false;
 
-  if(currentLevel[player1.positionY()][player1.positionX()] == 3)
-    active = true;
-
-  if(currentLevel[player2.positionY()][player2.positionX()] == 3)
-    active = true;
-
-  zombies.forEach(function(zombie) {
-    if(currentLevel[zombie.positionY()][zombie.positionX()] == 3)
+    if(currentLevel[player1.positionY()][player1.positionX()] == 3)
       active = true;
-  });
+  
+    if(currentLevel[player2.positionY()][player2.positionX()] == 3)
+      active = true;
+  
+    zombies.forEach(function(zombie) {
+      if(currentLevel[zombie.positionY()][zombie.positionX()] == 3)
+        active = true;
+    });
+  
+    if(active){
+      doors.forEach(function(door){
+        ctx.drawImage(tileArray[8], door[0] * 32, door[1] * 32);
+        currentLevel[door[1]][door[0]] = 8;
+      });
+    }
+    else{
+      doors.forEach(function(door){
+        ctx.drawImage(tileArray[4], door[0] * 32, door[1] * 32);
+        currentLevel[door[1]][door[0]] = 4;
+      });
+    }
 
-  if(active){
-    doors.forEach(function(door){
-      ctx.drawImage(tileArray[8], door[0] * 32, door[1] * 32);
-      currentLevel[door[1]][door[0]] = 8;
-    });
-  }
-  else{
-    doors.forEach(function(door){
-      ctx.drawImage(tileArray[4], door[0] * 32, door[1] * 32);
-      currentLevel[door[1]][door[0]] = 4;
-    });
-  }
+    resolve(true);
+  })
 }
 
 function flagCatched(){
@@ -204,15 +209,14 @@ function gameOver(playerId){
   setupLevel(levelNumber);
 }
 
-function moveTile(tileId, currentX, currentY, nextX, nextY){
-  buttonPressed();
-
+async function update(tileId, currentX, currentY, nextX, nextY){
+  // Restoring old tile
   ctx.drawImage(tileArray[0], currentX * 32, currentY * 32);
+  ctx.drawImage(tileArray[currentLevel[currentY][currentX]], currentX * 32, currentY * 32);
 
-  upperTile = currentLevel[currentY][currentX];
-  if(upperTile != 2)
-    ctx.drawImage(tileArray[upperTile], currentX * 32, currentY * 32);
+  await buttonPressed();
 
+  // Character
   ctx.drawImage(tileArray[tileId], nextX * 32, nextY * 32);
 
   flagCatched();

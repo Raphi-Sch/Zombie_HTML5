@@ -150,6 +150,6 @@ class Zombie {
 
         // Updating tile if it moved
         if(moved)
-            game.moveTile(2, previousX, previousY, this.x, this.y);
+            game.update(2, previousX, previousY, this.x, this.y);
     }
 }

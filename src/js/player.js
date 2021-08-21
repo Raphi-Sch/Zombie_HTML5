@@ -32,10 +32,10 @@ class Player {
 
         if(moved){
             if(this.id == 1)
-                moveTile(6, previousX, previousY, this.x, this.y);
+                game.update(6, previousX, previousY, this.x, this.y);
             
             if(this.id == 2)
-                moveTile(7, previousX, previousY, this.x, this.y); 
+                game.update(7, previousX, previousY, this.x, this.y); 
         }
     }
 
