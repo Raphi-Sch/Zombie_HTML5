@@ -15,10 +15,9 @@ var tileArray = new Array();
 var tmpInterval;
 
 var currentLevel = null;
+var levelNumber = null;
 var zombies = new Array();
-var doors_state   = new Array();
-var doorsX  = new Array();
-var doorsY  = new Array();
+var doors  = new Array();
 var player1 = null;
 var player2 = null;
 var playerMovement = 0;
@@ -58,39 +57,39 @@ function loadAssets(level){
 
     if(loaded == i){
       clearInterval(tmpInterval);
-
-      switch(parseInt(level)){
-        default:
-        case 1:
-          currentLevel = level1;
-          break;
-
-        case 2:
-          currentLevel = level2;
-          break;
-
-        case 3:
-          currentLevel = level3;
-          break;
-
-        case 4:
-          currentLevel = level4;
-          break;
-
-        case 5:
-          currentLevel = level5;
-          break;
-      }
-
-      setupLevel(currentLevel);
+      levelNumber = parseInt(level);
+      setupLevel(levelNumber);
     }
   }, 100);
 }
 
-function setupLevel(level){
+function setupLevel(levelNumber){
+  switch(levelNumber){
+    default:
+    case 1:
+      currentLevel = level1;
+      break;
+
+    case 2:
+      currentLevel = level2;
+      break;
+
+    case 3:
+      currentLevel = level3;
+      break;
+
+    case 4:
+      currentLevel = level4;
+      break;
+
+    case 5:
+      currentLevel = level5;
+      break;
+  }
+
   // Draw background
   var y = 0, x = 0;
-  level.forEach(function(dateRow){
+  currentLevel.forEach(function(dateRow){
     x = 0;
     dateRow.forEach(function(dataCell){
       switch(dataCell){
@@ -105,9 +104,7 @@ function setupLevel(level){
 
         case 4: // Door
           ctx.drawImage(tileArray[0], x * 32, y * 32);
-          doors_state.push(0);
-          doorsX.push(x);
-          doorsY.push(y);
+          doors.push([x, y]);
           break;
 
         case 5: // Flag
@@ -129,7 +126,6 @@ function setupLevel(level){
   // Draw players
   ctx.drawImage(tileArray[6], player1.positionX() * 32, player1.positionY() * 32);
   ctx.drawImage(tileArray[7], player2.positionX() * 32, player2.positionY() * 32);
-
 }
 
 function isCollinding(x, y){
@@ -150,7 +146,65 @@ function isCollinding(x, y){
   return false;
 }
 
+function buttonPressed(){
+  var active = false;
+
+  if(currentLevel[player1.positionY()][player1.positionX()] == 3)
+    active = true;
+
+  if(currentLevel[player2.positionY()][player2.positionX()] == 3)
+    active = true;
+
+  zombies.forEach(function(zombie) {
+    if(currentLevel[zombie.positionY()][zombie.positionX()] == 3)
+      active = true;
+  });
+
+  if(active){
+    doors.forEach(function(door){
+      ctx.drawImage(tileArray[8], door[0] * 32, door[1] * 32);
+      currentLevel[door[1]][door[0]] = 8;
+    });
+  }
+  else{
+    doors.forEach(function(door){
+      ctx.drawImage(tileArray[4], door[0] * 32, door[1] * 32);
+      currentLevel[door[1]][door[0]] = 4;
+    });
+  }
+}
+
+function flagCatched(){
+  if(currentLevel[player1.positionY()][player1.positionX()] == 5)
+    victory(1)
+
+  if(currentLevel[player2.positionY()][player2.positionX()] == 5)
+    victory(2)
+}
+
+function clear(){
+  ctx.clearRect(0, 0, 672, 672);
+  player1 = null;
+  player2 = null;
+  zombies = new Array();
+  doors   = new Array();
+}
+
+function victory(playerId){
+  alert("Victory !\nPlayer " + playerId + " has catched the flag.\nClick OK for the next level.");
+  clear();
+  setupLevel(++levelNumber);
+}
+
+function gameOver(playerId){
+  alert("GAME OVER !\nPlayer " + playerId + " has been bitten by a zombie.\nClick OK to restart the level.");
+  clear();
+  setupLevel(levelNumber);
+}
+
 function moveTile(tileId, currentX, currentY, nextX, nextY){
+  buttonPressed();
+
   ctx.drawImage(tileArray[0], currentX * 32, currentY * 32);
 
   upperTile = currentLevel[currentY][currentX];
@@ -158,6 +212,8 @@ function moveTile(tileId, currentX, currentY, nextX, nextY){
     ctx.drawImage(tileArray[upperTile], currentX * 32, currentY * 32);
 
   ctx.drawImage(tileArray[tileId], nextX * 32, nextY * 32);
+
+  flagCatched();
 }
 
 // Keyboard handler
@@ -234,4 +290,12 @@ function keyPressed(event){
       });
     }
 
+    // Check if bitten
+    zombies.forEach(function(zombie){
+      if(zombie.positionX() == player1.positionX() && zombie.positionY() == player1.positionY())
+        gameOver(1);
+
+      if(zombie.positionX() == player2.positionX() && zombie.positionY() == player2.positionY())
+        gameOver(2);
+    });
 }
