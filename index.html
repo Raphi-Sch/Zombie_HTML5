@@ -35,6 +35,7 @@
             }
 
             var level = getParameter('level');
+            if(level == null) level = 1;
 
             document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('level').value = level;
