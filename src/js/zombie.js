@@ -34,7 +34,7 @@ class Zombie {
 
     firstPossiblePath(game, dx, dy){
         // All Path blocked (in order : UP, DOWN, LEFT, RIGHT)
-        if(game.isCollinding(this.x, this.y - 1) && game.isCollinding(this.x, this.y + 1) &&  game.isCollinding(this.x - 1, this.y && game.isCollinding(this.x + 1, this.y)))
+        if(game.isCollinding(this.x, this.y - 1) && game.isCollinding(this.x, this.y + 1) && game.isCollinding(this.x - 1, this.y) && game.isCollinding(this.x + 1, this.y))
             return "";
 
         // 3 Path blocked ---------------------
