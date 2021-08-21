@@ -190,22 +190,25 @@ function flagCatched(){
 }
 
 function clear(){
-  ctx.clearRect(0, 0, 672, 672);
-  player1 = null;
-  player2 = null;
-  zombies = new Array();
-  doors   = new Array();
+  return new Promise((resolve, reject) => {
+    ctx.clearRect(0, 0, 672, 672);
+    player1 = null;
+    player2 = null;
+    zombies = new Array();
+    doors   = new Array();
+    resolve(true);
+  })
 }
 
-function victory(playerId){
+async function victory(playerId){
   alert("Victory !\nPlayer " + playerId + " has catched the flag.\nClick OK for the next level.");
-  clear();
+  await clear();
   setupLevel(++levelNumber);
 }
 
-function gameOver(playerId){
+async function gameOver(playerId){
   alert("GAME OVER !\nPlayer " + playerId + " has been bitten by a zombie.\nClick OK to restart the level.");
-  clear();
+  await clear();
   setupLevel(levelNumber);
 }
 
