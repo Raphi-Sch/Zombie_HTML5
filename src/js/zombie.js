@@ -21,13 +21,13 @@ class Zombie {
         if(Math.abs(dx) > Math.abs(dy)){
             if(dx < 0)
                 return "L";
-            else
+            if(dx > 0)
                 return "R";
         }
         else{
             if(dy < 0)
                 return "U";
-            else
+            if(dy > 0)
                 return "D";
         }
     }

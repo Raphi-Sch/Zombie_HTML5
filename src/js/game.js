@@ -138,10 +138,12 @@ function isCollinding(x, y){
   if(player2.positionX() == x && player2.positionY() == y)
     return true;
 
-  zombies.forEach(function(zombie) {
+  var zombie = null;
+  for(var i = 0; i < zombies.length; i++){
+    zombie = zombies[i];
     if(zombie.positionX() == x && zombie.positionY() == y)
       return true;
-  });
+  }
 
   return false;
 }
@@ -216,18 +218,12 @@ function moveTile(tileId, currentX, currentY, nextX, nextY){
   flagCatched();
 }
 
-// Keyboard handler
-/*
-Z: 122,
-S: 115,
-Q: 113,
-D: 100,
-
-numpad4 : 52
-numpad5 : 53
-numpad6 : 54
-numpad8 : 56
-
+/* Keyboard handler
+      | Player 1 | Player 2
+UP    | Z: 122,  | numpad4 : 52
+DOWN  | S: 115,  | numpad5 : 53
+LEFT  | Q: 113,  | numpad6 : 54
+RIGHT | D: 100,  | numpad8 : 56
 */
 function keyPressed(event){
     var key = event.which || event.keyCode;
