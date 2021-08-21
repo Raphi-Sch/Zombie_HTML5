@@ -69,7 +69,7 @@ class Zombie {
 
         // UP, RIGHT
         if(game.isCollinding(this.x, this.y + 1) && game.isCollinding(this.x + 1, this.y))
-            return "R";
+            return "L";
 
         // 1 Path blocked --------------------
         if(game.isCollinding(this.x, this.y + 1) || game.isCollinding(this.x, this.y - 1)){
