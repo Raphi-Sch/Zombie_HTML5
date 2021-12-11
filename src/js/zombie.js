@@ -3,15 +3,17 @@ class Zombie {
         this.x = x;
         this.y = y;
         this.id = id;
+        this.dPlayer1;
+        this.dPlayer2;
     }
     positionX(){ return this.x };
     positionY(){ return this.y };
 
     closestPlayer(player1X, player1Y, player2X, player2Y){
-        var dPlayer1 = Math.sqrt(Math.pow(player1X - this.x, 2) + Math.pow(player1Y - this.y, 2));
-        var dPlayer2 = Math.sqrt(Math.pow(player2X - this.x, 2) + Math.pow(player2Y - this.y, 2));
+        this.dPlayer1 = Math.ceil(Math.sqrt(Math.pow(player1X - this.x, 2) + Math.pow(player1Y - this.y, 2)));
+        this.dPlayer2 = Math.ceil(Math.sqrt(Math.pow(player2X - this.x, 2) + Math.pow(player2Y - this.y, 2)));
 
-        if(dPlayer1 < dPlayer2)
+        if(this.dPlayer1 < this.dPlayer2)
             return [player1X - this.x, player1Y - this.y];
         else
             return [player2X - this.x, player2Y - this.y];
@@ -97,6 +99,17 @@ class Zombie {
         var dx = res[0];
         var dy = res[1];
 
+        // Player is bitten
+        if(this.dPlayer1 == 1){
+            game.playerDead = 1
+            return;
+        }
+
+        if(this.dPlayer2 == 1){
+            game.playerDead = 2
+            return;
+        }
+        
         var direction = this.followPlayer(dx, dy);
 
         // Primary movement

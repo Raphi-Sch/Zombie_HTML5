@@ -21,6 +21,7 @@ var doors  = new Array();
 var player1 = null;
 var player2 = null;
 var playerMovement = 0;
+var playerDead = 0;
 
 function loadAssets(level){
   // Canvas context
@@ -288,17 +289,26 @@ function keyPressed(event){
 
     if(playerMovement >= 2){
       playerMovement = 0;
+      playerDead = 0;
+
       zombies.forEach(function(zombie){
         zombie.move(this, player1.positionX(), player1.positionY(), player2.positionX(), player2.positionY());
+
+        console.log("Which player is dead : " + playerDead);
+
+        if(playerDead != 0){
+          gameOver(playerDead);
+        }
       });
+
     }
 
     // Check if bitten
-    zombies.forEach(function(zombie){
+    /*zombies.forEach(function(zombie){
       if(zombie.positionX() == player1.positionX() && zombie.positionY() == player1.positionY())
         gameOver(1);
 
       if(zombie.positionX() == player2.positionX() && zombie.positionY() == player2.positionY())
         gameOver(2);
-    });
+    });*/
 }
