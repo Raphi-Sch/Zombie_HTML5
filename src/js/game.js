@@ -302,13 +302,4 @@ function keyPressed(event){
       });
 
     }
-
-    // Check if bitten
-    /*zombies.forEach(function(zombie){
-      if(zombie.positionX() == player1.positionX() && zombie.positionY() == player1.positionY())
-        gameOver(1);
-
-      if(zombie.positionX() == player2.positionX() && zombie.positionY() == player2.positionY())
-        gameOver(2);
-    });*/
 }
