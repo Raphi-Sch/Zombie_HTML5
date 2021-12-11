@@ -64,70 +64,73 @@ function loadAssets(level){
   }, 100);
 }
 
-function setupLevel(levelNumber){
-  switch(levelNumber){
-    default:
-    case 1:
-      currentLevel = level1;
-      break;
+async function setupLevel(levelNumber){
+  return new Promise((resolve, reject) => {
+    switch(levelNumber){
+      default:
+      case 1:
+        currentLevel = level1;
+        break;
 
-    case 2:
-      currentLevel = level2;
-      break;
+      case 2:
+        currentLevel = level2;
+        break;
 
-    case 3:
-      currentLevel = level3;
-      break;
+      case 3:
+        currentLevel = level3;
+        break;
 
-    case 4:
-      currentLevel = level4;
-      break;
+      case 4:
+        currentLevel = level4;
+        break;
 
-    case 5:
-      currentLevel = level5;
-      break;
-  }
+      case 5:
+        currentLevel = level5;
+        break;
+    }
 
-  // Draw background
-  var y = 0, x = 0;
-  currentLevel.forEach(function(dateRow){
-    x = 0;
-    dateRow.forEach(function(dataCell){
-      switch(dataCell){
-        case 2: // Zombie
-          ctx.drawImage(tileArray[0], x * 32, y * 32);
-          zombies.push(new Zombie(x, y, zombies.length));
-          currentLevel[y][x] = 0;
-          break;
+    // Draw background
+    var y = 0, x = 0;
+    currentLevel.forEach(function(dateRow){
+      x = 0;
+      dateRow.forEach(function(dataCell){
+        switch(dataCell){
+          case 2: // Zombie
+            ctx.drawImage(tileArray[0], x * 32, y * 32);
+            zombies.push(new Zombie(x, y, zombies.length));
+            currentLevel[y][x] = 0;
+            break;
 
-        case 3: // Button
-          ctx.drawImage(tileArray[0], x * 32, y * 32);
-          break;
+          case 3: // Button
+            ctx.drawImage(tileArray[0], x * 32, y * 32);
+            break;
 
-        case 4: // Door
-          ctx.drawImage(tileArray[0], x * 32, y * 32);
-          doors.push([x, y]);
-          break;
+          case 4: // Door
+            ctx.drawImage(tileArray[0], x * 32, y * 32);
+            doors.push([x, y]);
+            break;
 
-        case 5: // Flag
-          ctx.drawImage(tileArray[0], x * 32, y * 32);
-          break;
+          case 5: // Flag
+            ctx.drawImage(tileArray[0], x * 32, y * 32);
+            break;
 
-        default: break;
-      }
-      ctx.drawImage(tileArray[dataCell], x * 32, y * 32);
-      x++;
+          default: break;
+        }
+        ctx.drawImage(tileArray[dataCell], x * 32, y * 32);
+        x++;
+      });
+      y++;
     });
-    y++;
-  });
 
-  // Create players
-  player1 = new Player(2, 2, 1);
-  player2 = new Player(4, 2, 2);
+    // Create players
+    player1 = new Player(2, 2, 1);
+    player2 = new Player(4, 2, 2);
 
-  // Draw players
-  ctx.drawImage(tileArray[6], player1.positionX() * 32, player1.positionY() * 32);
-  ctx.drawImage(tileArray[7], player2.positionX() * 32, player2.positionY() * 32);
+    // Draw players
+    ctx.drawImage(tileArray[6], player1.positionX() * 32, player1.positionY() * 32);
+    ctx.drawImage(tileArray[7], player2.positionX() * 32, player2.positionY() * 32);
+    resolve(true);
+  })
 }
 
 function isCollinding(x, y){
@@ -150,7 +153,7 @@ function isCollinding(x, y){
   return false;
 }
 
-function buttonPressed(){
+async function buttonPressed(){
   return new Promise((resolve, reject) => {
     var active = false;
 
@@ -182,15 +185,15 @@ function buttonPressed(){
   })
 }
 
-function flagCatched(){
+async function flagCatched(){
   if(currentLevel[player1.positionY()][player1.positionX()] == 5)
-    victory(1)
+    await victory(1)
 
   if(currentLevel[player2.positionY()][player2.positionX()] == 5)
-    victory(2)
+    await victory(2)
 }
 
-function clear(){
+async function clear(){
   return new Promise((resolve, reject) => {
     ctx.clearRect(0, 0, 672, 672);
     player1 = null;
@@ -204,13 +207,13 @@ function clear(){
 async function victory(playerId){
   alert("Victory !\nPlayer " + playerId + " has catched the flag.\nClick OK for the next level.");
   await clear();
-  setupLevel(++levelNumber);
+  await setupLevel(++levelNumber);
 }
 
 async function gameOver(playerId){
   alert("GAME OVER !\nPlayer " + playerId + " has been bitten by a zombie.\nClick OK to restart the level.");
   await clear();
-  setupLevel(levelNumber);
+  await setupLevel(levelNumber);
 }
 
 async function update(tileId, currentX, currentY, nextX, nextY){
@@ -293,8 +296,6 @@ function keyPressed(event){
 
       zombies.forEach(function(zombie){
         zombie.move(this, player1.positionX(), player1.positionY(), player2.positionX(), player2.positionY());
-
-        console.log("Which player is dead : " + playerDead);
 
         if(playerDead != 0){
           gameOver(playerDead);
