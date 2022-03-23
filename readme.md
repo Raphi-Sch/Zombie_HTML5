@@ -7,3 +7,5 @@
 This is a port of and high school project made in 2015
 
 [Original Project](https://github.com/Raphi-Sch/Zombie)
+
+![Screenshot](screenshot.png)
